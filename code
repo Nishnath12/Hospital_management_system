@@ -1,0 +1,306 @@
+#include <fstream>
+#include <iostream>
+#include <conio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+using namespace std;
+
+class hospital {
+    int pid;
+    char pname[50];
+    char fname[50];
+    char mname[50];
+    char hname[50];
+    char ren[50];
+    char rer[50];
+    char gen[50];
+    float age;
+    char mob[50];
+    char status[50];
+    char diagnosis[100];
+
+public:
+    void in() {
+        cin.ignore();
+        _cprintf("Please enter the information respectively:\n");
+
+        _cprintf("Enter Patient ID: ");
+        cin >> pid;
+        cin.ignore();
+
+        _cprintf("Enter Patient Name: ");
+        cin.getline(pname, 50);
+
+        _cprintf("Enter Patient Age: ");
+        cin >> age;
+        cin.ignore();
+
+        _cprintf("Enter Gender: ");
+        cin.getline(gen, 50);
+
+        _cprintf("Is the patient married? (yes/no): ");
+        cin.getline(status, 50);
+
+        if (strcmpi(gen, "female") == 0) {
+            if (strcmpi(status, "yes") == 0) {
+                _cprintf("Enter Husband's Name: ");
+                cin.getline(hname, 50);
+            } else {
+                _cprintf("Enter Father's Name: ");
+                cin.getline(fname, 50);
+                _cprintf("Enter Mother's Name: ");
+                cin.getline(mname, 50);
+            }
+        } else {
+            _cprintf("Enter Father's Name: ");
+            cin.getline(fname, 50);
+            _cprintf("Enter Referer's Name: ");
+            cin.getline(ren, 50);
+            _cprintf("Enter Referer's Relation: ");
+            cin.getline(rer, 50);
+        }
+
+        _cprintf("Enter Mobile Number: ");
+        cin.getline(mob, 50);
+
+        _cprintf("Enter Diagnosis: ");
+        cin.getline(diagnosis, 100);
+    }
+
+    void out() {
+        cout << "\n------------------------------------";
+        cout << "\nPatient ID       : " << pid;
+        cout << "\nName             : " << pname;
+        cout << "\nAge              : " << age;
+        cout << "\nGender           : " << gen;
+        cout << "\nMarital Status   : " << status;
+
+        if (strcmpi(gen, "female") == 0 && strcmpi(status, "yes") == 0) {
+            cout << "\nHusband's Name   : " << hname;
+        } else {
+            cout << "\nFather's Name    : " << fname;
+            if (strcmpi(gen, "female") == 0)
+                cout << "\nMother's Name    : " << mname;
+            else {
+                cout << "\nReferer's Name   : " << ren;
+                cout << "\nReferer's Relation : " << rer;
+            }
+        }
+
+        cout << "\nMobile Number    : " << mob;
+        cout << "\nDiagnosis        : " << diagnosis;
+        cout << "\n------------------------------------";
+    }
+
+    int record() {
+        return pid;
+    }
+
+    void update() {
+        char choice1[20], choice2[20];
+        _cprintf("Do you want to update the record? (yes/no): ");
+        cin >> choice1;
+        cin.ignore();
+        if (strcmpi(choice1, "yes") != 0) return;
+
+        _cprintf("What do you want to update (pname, fname, hname, mname, phone, state, diagnosis): ");
+        cin.getline(choice2, 20);
+
+        if (strcmpi(choice2, "pname") == 0)
+            cin.getline(pname, 50);
+        else if (strcmpi(choice2, "fname") == 0)
+            cin.getline(fname, 50);
+        else if (strcmpi(choice2, "hname") == 0)
+            cin.getline(hname, 50);
+        else if (strcmpi(choice2, "mname") == 0)
+            cin.getline(mname, 50);
+        else if (strcmpi(choice2, "phone") == 0)
+            cin.getline(mob, 50);
+        else if (strcmpi(choice2, "state") == 0)
+            cin.getline(status, 50);
+        else if (strcmpi(choice2, "diagnosis") == 0)
+            cin.getline(diagnosis, 100);
+    }
+} h;
+
+// --- Core Functions ---
+
+void add() {
+    cout << "\nNOTE: Spaces allowed in names & diagnosis.\n";
+    fstream file("hospital.dat", ios::binary | ios::out | ios::app);
+    h.in();
+    file.write((char*)&h, sizeof(h));
+    file.close();
+}
+
+void show() {
+    fstream file("hospital.dat", ios::binary | ios::in);
+    bool found = false;
+    while (file.read((char*)&h, sizeof(h))) {
+        h.out();
+        found = true;
+    }
+    if (!found)
+        cout << "\nNo records found.\n";
+    file.close();
+}
+
+void search() {
+    ifstream file("hospital.dat", ios::binary);
+    int id;
+    bool found = false;
+    _cprintf("Enter patient ID to search: ");
+    cin >> id;
+
+    while (file.read((char*)&h, sizeof(h))) {
+        if (h.record() == id) {
+            h.out();
+            found = true;
+        }
+    }
+
+    if (!found)
+        cout << "\nRecord not found.\n";
+
+    file.close();
+}
+
+void transpose() {
+    ofstream ifile("hos.dat", ios::binary | ios::out | ios::trunc);
+    ifstream file("hospital.dat", ios::binary | ios::in);
+    int id1, id2;
+
+    _cprintf("Enter ID range:\nFrom ID: ");
+    cin >> id1;
+    _cprintf("To ID: ");
+    cin >> id2;
+
+    while (file.read((char*)&h, sizeof(h))) {
+        if (h.record() >= id1 && h.record() <= id2) {
+            ifile.write((char*)&h, sizeof(h));
+        }
+    }
+
+    file.close();
+    ifile.close();
+    cout << "\nTranspose complete. Use option 5 to view.\n";
+}
+
+void shot() {
+    _cprintf("Showing transposed records:\n");
+    fstream ifile("hos.dat", ios::binary | ios::in);
+    bool found = false;
+    while (ifile.read((char*)&h, sizeof(h))) {
+        h.out();
+        found = true;
+    }
+    if (!found)
+        cout << "\nNo transposed records found.\n";
+    ifile.close();
+}
+
+void del() {
+    ofstream ifile("hos.dat", ios::binary);
+    ifstream file("hospital.dat", ios::binary);
+    int id;
+    bool found = false;
+
+    _cprintf("Enter patient ID to delete: ");
+    cin >> id;
+
+    while (file.read((char*)&h, sizeof(h))) {
+        if (h.record() == id) {
+            found = true;
+        } else {
+            ifile.write((char*)&h, sizeof(h));
+        }
+    }
+
+    file.close();
+    ifile.close();
+
+    remove("hospital.dat");
+    rename("hos.dat", "hospital.dat");
+
+    if (found)
+        cout << "\nRecord deleted successfully.\n";
+    else
+        cout << "\nRecord not found.\n";
+}
+
+void erase() {
+    char choice[10];
+    _cprintf("Do you really want to erase all records? (yes/no): ");
+    cin >> choice;
+    if (strcmpi(choice, "yes") == 0) {
+        fstream file("hospital.dat", ios::binary | ios::out | ios::trunc);
+        file.close();
+        _cprintf("All records erased.\n");
+    } else {
+        _cprintf("Erase cancelled.\n");
+    }
+}
+
+void modify() {
+    fstream file("hospital.dat", ios::binary | ios::in | ios::out);
+    int id;
+    bool found = false;
+    streampos pos;
+
+    _cprintf("Enter patient ID to modify: ");
+    cin >> id;
+    cin.ignore();
+
+    while (file.read((char*)&h, sizeof(h))) {
+        if (h.record() == id) {
+            pos = file.tellg();
+            h.update();
+            file.seekp(pos - static_cast<streampos>(sizeof(h)));
+            file.write((char*)&h, sizeof(h));
+            found = true;
+            break;
+        }
+    }
+
+    file.close();
+
+    if (found)
+        cout << "\nRecord updated successfully.\n";
+    else
+        cout << "\nRecord not found.\n";
+}
+
+// --- Main Menu ---
+
+int main() {
+    char ch1;
+    while (1) {
+        _cprintf("\n\n========= Hospital Management =========\n");
+        _cprintf("1. Add Record\n");
+        _cprintf("2. Display All Records\n");
+        _cprintf("3. Search Record\n");
+        _cprintf("4. Transpose Records (by ID range)\n");
+        _cprintf("5. Show Transposed Records\n");
+        _cprintf("6. Delete Record\n");
+        _cprintf("7. Erase All Records\n");
+        _cprintf("8. Modify Record\n");
+        _cprintf("9. Exit\n");
+        _cprintf("Enter your choice: ");
+        cin >> ch1;
+
+        switch (ch1) {
+            case '1': add(); break;
+            case '2': show(); break;
+            case '3': search(); break;
+            case '4': transpose(); break;
+            case '5': shot(); break;
+            case '6': del(); break;
+            case '7': erase(); break;
+            case '8': modify(); break;
+            case '9': exit(0);
+            default: _cprintf("Invalid choice!\n");
+        }
+    }
+    return 0;
+}
