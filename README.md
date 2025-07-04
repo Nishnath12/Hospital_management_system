@@ -19,11 +19,11 @@ A simple yet functional **Hospital Management System** built using **C++** and *
 
 ## 📦 File Structure
 
-📁 Hospital-Management-System
-├── hospital_management.cpp // Main C++ source code
-├── hospital.dat // Binary file to store patient records
-├── hos.dat // Temporary file for filtering/deleting
-└── README.md // Project documentation
+- 📁 Hospital-Management-System
+- ├── hospital_management.cpp // Main C++ source code
+- ├── hospital.dat // Binary file to store patient records
+- ├── hos.dat // Temporary file for filtering/deleting
+- └── README.md // Project documentation
 
 
 ---
