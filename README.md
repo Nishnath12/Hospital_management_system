@@ -43,9 +43,3 @@ A simple yet functional **Hospital Management System** built using **C++** and *
 
 ---
 
-## 🔧 How to Compile & Run
-
-### 🖥️ Using Terminal (Linux/Mac)
-```bash
-g++ hospital_management.cpp -o hospital
-./hospital
